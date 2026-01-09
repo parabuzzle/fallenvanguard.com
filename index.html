@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FALLEN VANGUARD — Signal Detected</title>
+  <meta name="description" content="Fallen Vanguard // Signal Detected — Transmission 01" />
+  <style>
+    :root {
+      --phosphor: #b7ffb7;           /* CRT green */
+      --phosphor-dim: #6edc6e;       /* dimmer */
+      --bg: #030603;                 /* true dark */
+      --accent: #e05555;             /* error red */
+    }
+
+    html, body { height: 100%; margin: 0; background: var(--bg); color: var(--phosphor); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+
+    .screen {
+      position: relative;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 3vmin;
+      color: var(--phosphor);
+      background: radial-gradient(120% 140% at 50% 50%, #061006 0%, #030603 65%);
+      box-shadow: inset 0 0 80px rgba(0,0,0,0.75);
+      overflow: hidden;
+    }
+
+    .screen::before {
+      content: ""; position: absolute; inset: -2px;
+      background:
+        repeating-linear-gradient(to bottom, rgba(0,0,0,0) 0px, rgba(0,0,0,0) 2px, rgba(0,0,0,0.08) 3px, rgba(0,0,0,0.08) 4px);
+      mix-blend-mode: multiply; pointer-events: none;
+    }
+    .screen::after {
+      content: ""; position: absolute; inset: 0; pointer-events: none;
+      background:
+        radial-gradient(150% 120% at 50% 0%, rgba(255,255,255,0.06), rgba(255,255,255,0) 40%),
+        radial-gradient(140% 140% at 50% 120%, rgba(0,0,0,0) 60%, rgba(0,0,0,0.6) 100%);
+      animation: flicker 5.4s infinite steps(80);
+      filter: blur(.2px);
+    }
+    @keyframes flicker { 0%,22%,24%,100%{opacity:1} 23%{opacity:.94} 70%{opacity:.97} }
+
+    .term-wrap { width: min(1000px, 94vw); }
+
+    .header { color: var(--phosphor-dim); letter-spacing: .06em; margin-bottom: .75rem; text-transform: uppercase; font-size: clamp(12px,1.8vw,14px); opacity: .9; }
+
+    .terminal { font-size: clamp(16px, 2.4vw, 24px); line-height: 1.5; white-space: pre-wrap; text-shadow: 0 0 2px rgba(120,255,120,.2), 0 0 6px rgba(120,255,120,.08); }
+
+    .cursor { display:inline-block; width:.6ch; height:1em; margin-left:2px; background:var(--phosphor); vertical-align:-0.15em; animation: blink 1s step-end infinite; box-shadow: 0 0 6px rgba(120,255,120,.6); }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    .hint { margin-top: 1rem; color: var(--phosphor-dim); font-size: clamp(12px, 1.8vw, 14px); }
+    .error { color: var(--accent); text-shadow: 0 0 6px rgba(200,0,0,.25); }
+
+    .stream { margin-top: 1.25rem; color: #7fff7f; opacity:.8; font-size: clamp(12px, 2vw, 18px); line-height: 1.2; letter-spacing:.06em; }
+    .glitch { animation: jitter .2s infinite steps(2); }
+    @keyframes jitter { 0%{ text-shadow: 1px 0 2px rgba(0,255,0,.3), -1px 0 2px rgba(0,255,0,.2);} 100%{ text-shadow: -1px 0 2px rgba(0,255,0,.3), 1px 0 2px rgba(0,255,0,.2);} }
+
+    @media (prefers-reduced-motion: reduce) { .screen::after, .cursor, .glitch { animation: none; } }
+  </style>
+</head>
+<body>
+  <main class="screen" role="application" aria-label="CRT terminal">
+    <div class="term-wrap">
+      <div class="header">// FALLEN VANGUARD :: UPLINK PORT 01</div>
+      <div class="terminal" id="terminal">SIGNAL DETECTED<span class="cursor" aria-hidden="true"></span></div>
+      <div class="hint" id="hint">Press <strong>Enter</strong> to receive transmission…</div>
+      <div class="stream" id="stream" aria-hidden="true"></div>
+      <noscript>
+        <p class="hint error">JavaScript disabled — static message follows:</p>
+        <p class="terminal">Hello?
+Is there anyone left out there?
+Does this thing even work?</p>
+      </noscript>
+    </div>
+  </main>
+
+  <script>
+    (function () {
+      const term = document.getElementById('terminal');
+      const hint = document.getElementById('hint');
+      const stream = document.getElementById('stream');
+      const screenEl = document.querySelector('.screen');
+
+      // Feature-detect touch to allow tap on mobile only
+      const isTouch = (('ontouchstart' in window) || navigator.maxTouchPoints > 0 || window.matchMedia('(pointer: coarse)').matches);
+      if (isTouch) {
+        // Update hint copy for mobile users
+        hint.innerHTML = 'Press <strong>Enter</strong> or <strong>tap</strong> to receive transmission…';
+        screenEl.addEventListener('touchstart', () => transmit(), { passive: true });
+      }
+
+      const message = [
+        "\n",
+        "RECEIVING…\n\n",
+        "Hello?\n",
+        "Is there anyone left out there?\n",
+        "Does this thing even work?\n"
+      ].join("");
+
+      let typing = false;
+
+      function typeLine(text, speed = 16) {
+        return new Promise(resolve => {
+          let i = 0;
+          const cursor = document.createElement('span');
+          cursor.className = 'cursor';
+          cursor.setAttribute('aria-hidden','true');
+          const prev = term.querySelector('.cursor'); if (prev) prev.remove();
+          term.appendChild(cursor);
+          const timer = setInterval(() => {
+            term.insertBefore(document.createTextNode(text.charAt(i++)), cursor);
+            if (i >= text.length) { clearInterval(timer); resolve(); }
+          }, speed);
+        });
+      }
+
+      async function transmit() {
+        if (typing) return; typing = true;
+        hint.textContent = 'Decrypting…';
+        await typeLine("\n> LINK ESTABLISHED [OK]\n", 10);
+        await typeLine(message, 14);
+        hint.innerHTML = '<span class="error">End of Transmission.</span> Press <strong>R</strong> to replay.';
+        typing = false;
+        startStream();
+      }
+
+      function reset() {
+        term.textContent = 'SIGNAL DETECTED';
+        const c = document.createElement('span'); c.className = 'cursor'; c.setAttribute('aria-hidden','true'); term.appendChild(c);
+        hint.innerHTML = isTouch ? 'Press <strong>Enter</strong> or <strong>tap</strong> to receive transmission…' : 'Press <strong>Enter</strong> to receive transmission…';
+        stopStream(); stream.textContent = '';
+      }
+
+      const phrase = 'Fallen Vanguard';
+      const bin = phrase.split('').map(ch => ch.charCodeAt(0).toString(2).padStart(8,'0')).join(' ');
+      let idx = 0, streamTimer = null, glitchTimer = null;
+
+      function nextSlice(len=88) {
+        const loop = (bin + ' ').repeat(100);
+        const s = loop.slice(idx, idx + len);
+        idx = (idx + 1) % bin.length;
+        return s;
+      }
+
+      function startStream(){
+        if (streamTimer) return;
+        stream.classList.add('glitch');
+        streamTimer = setInterval(() => { stream.textContent = nextSlice(); }, 40);
+        glitchTimer = setInterval(() => {
+          if (!stream.textContent) return;
+          let t = stream.textContent.split('');
+          for (let i=0;i<3;i++){ const p = Math.floor(Math.random()*t.length); if (t[p] === '0') t[p] = '1'; else if (t[p] === '1') t[p] = '0'; }
+          stream.textContent = t.join('');
+        }, 300);
+      }
+      function stopStream(){
+        clearInterval(streamTimer); clearInterval(glitchTimer);
+        streamTimer = glitchTimer = null; stream.classList.remove('glitch');
+      }
+
+      // Controls: only Enter/R keys on all devices
+      window.addEventListener('keydown', (e) => { 
+        if (e.key === 'Enter') transmit(); 
+        if (e.key.toLowerCase() === 'r') reset(); 
+      });
+
+      // Minimal self-tests
+      (function tests(){
+        try {
+          console.assert(typeof isTouch === 'boolean', 'isTouch should be boolean');
+          console.assert(message.includes('Hello?\n'), 'Transmission must include Hello line');
+        } catch(e){ console.warn('Self-tests warning:', e); }
+      })();
+    })();
+  </script>
+</body>
+</html>
