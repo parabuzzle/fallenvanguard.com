@@ -4,15 +4,44 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>FALLEN VANGUARD — Signal Detected</title>
-  <meta name="description" content="Fallen Vanguard // Signal Detected — Transmission 01" />
+  <meta name="description" content="Fallen Vanguard // Signal Detected — Transmission incoming" />
+
+  <!-- SEO & Indexing -->
+  <meta name="robots" content="index, follow" />
+  <meta name="author" content="Fallen Vanguard" />
+  <meta name="keywords" content="Fallen Vanguard, metal, band, music, resistance, signal" />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://fallenvanguard.com/" />
+  <meta property="og:title" content="FALLEN VANGUARD — Signal Detected" />
+  <meta property="og:description" content="Fallen Vanguard // Signal Detected — Transmission incoming" />
+  <meta property="og:site_name" content="Fallen Vanguard" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:url" content="https://fallenvanguard.com/" />
+  <meta name="twitter:title" content="FALLEN VANGUARD — Signal Detected" />
+  <meta name="twitter:description" content="Fallen Vanguard // Signal Detected — Transmission incoming" />
+
+  <!-- Theme & Icons -->
+  <meta name="theme-color" content="#030603" />
+  <meta name="msapplication-TileColor" content="#030603" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+  <!-- Preconnect for performance -->
+  <link rel="canonical" href="https://fallenvanguard.com/" />
+
   <style>
     :root {
-      --phosphor: #b7ffb7;           /* CRT green */
-      --phosphor-dim: #6edc6e;       /* dimmer */
-      --bg: #030603;                 /* true dark */
-      --accent: #e05555;             /* error red */
+      --phosphor: #b7ffb7;
+      --phosphor-dim: #6edc6e;
+      --bg: #030603;
+      --accent: #e05555;
+      --amber: #ffb347;
     }
 
+    *, *::before, *::after { box-sizing: border-box; }
     html, body { height: 100%; margin: 0; background: var(--bg); color: var(--phosphor); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
 
     .screen {
@@ -22,160 +51,1701 @@
       place-items: center;
       padding: 3vmin;
       color: var(--phosphor);
-      background: radial-gradient(120% 140% at 50% 50%, #061006 0%, #030603 65%);
-      box-shadow: inset 0 0 80px rgba(0,0,0,0.75);
+      background: radial-gradient(ellipse at center, #0a150a 0%, #050a05 50%, #020302 100%);
+      box-shadow: inset 0 0 120px rgba(0,0,0,0.9);
       overflow: hidden;
     }
 
+    /* CRT screen curvature overlay */
+    .crt-overlay {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    /* Curved screen edges - barrel distortion simulation */
+    .crt-overlay::before {
+      content: "";
+      position: absolute;
+      inset: -5%;
+      background: radial-gradient(ellipse at center,
+        transparent 0%,
+        transparent 60%,
+        rgba(0,0,0,0.15) 70%,
+        rgba(0,0,0,0.4) 80%,
+        rgba(0,0,0,0.8) 90%,
+        #000 100%
+      );
+      border-radius: 50% / 10%;
+    }
+
+    /* Glass reflection / highlight */
+    .crt-overlay::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 40%;
+      background: linear-gradient(
+        180deg,
+        rgba(255,255,255,0.06) 0%,
+        rgba(255,255,255,0.02) 30%,
+        transparent 100%
+      );
+      pointer-events: none;
+    }
+
+    /* Scanlines - more pronounced */
     .screen::before {
       content: ""; position: absolute; inset: -2px;
-      background:
-        repeating-linear-gradient(to bottom, rgba(0,0,0,0) 0px, rgba(0,0,0,0) 2px, rgba(0,0,0,0.08) 3px, rgba(0,0,0,0.08) 4px);
-      mix-blend-mode: multiply; pointer-events: none;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 1px,
+        rgba(0,0,0,0.3) 1px,
+        rgba(0,0,0,0.3) 2px
+      );
+      pointer-events: none; z-index: 10;
     }
+
+    /* Flicker + vignette */
     .screen::after {
       content: ""; position: absolute; inset: 0; pointer-events: none;
       background:
-        radial-gradient(150% 120% at 50% 0%, rgba(255,255,255,0.06), rgba(255,255,255,0) 40%),
-        radial-gradient(140% 140% at 50% 120%, rgba(0,0,0,0) 60%, rgba(0,0,0,0.6) 100%);
-      animation: flicker 5.4s infinite steps(80);
-      filter: blur(.2px);
+        radial-gradient(150% 120% at 50% 0%, rgba(255,255,255,0.04), rgba(255,255,255,0) 40%),
+        radial-gradient(140% 140% at 50% 120%, rgba(0,0,0,0) 60%, rgba(0,0,0,0.5) 100%);
+      animation: flicker 0.15s infinite;
+      z-index: 11;
     }
-    @keyframes flicker { 0%,22%,24%,100%{opacity:1} 23%{opacity:.94} 70%{opacity:.97} }
+    @keyframes flicker {
+      0% { opacity: 0.97; }
+      50% { opacity: 1; }
+      100% { opacity: 0.98; }
+    }
 
-    .term-wrap { width: min(1000px, 94vw); }
+    /* Screen brightness fluctuation */
+    @keyframes breathe {
+      0%, 100% { filter: brightness(1); }
+      50% { filter: brightness(1.03); }
+    }
+    .screen {
+      animation: breathe 4s ease-in-out infinite;
+    }
 
-    .header { color: var(--phosphor-dim); letter-spacing: .06em; margin-bottom: .75rem; text-transform: uppercase; font-size: clamp(12px,1.8vw,14px); opacity: .9; }
+    /* Chromatic aberration on glitch */
+    .chromatic { text-shadow: -1px 0 rgba(255,0,0,0.4), 1px 0 rgba(0,255,255,0.4); }
 
-    .terminal { font-size: clamp(16px, 2.4vw, 24px); line-height: 1.5; white-space: pre-wrap; text-shadow: 0 0 2px rgba(120,255,120,.2), 0 0 6px rgba(120,255,120,.08); }
+    /* Screen tear effect */
+    @keyframes screenTear {
+      0%, 100% { clip-path: inset(0); transform: translateX(0); }
+      10% { clip-path: inset(15% 0 40% 0); transform: translateX(3px); }
+      11% { clip-path: inset(0); transform: translateX(0); }
+      60% { clip-path: inset(55% 0 20% 0); transform: translateX(-4px); }
+      61% { clip-path: inset(0); transform: translateX(0); }
+    }
+    .tearing { animation: screenTear 0.15s steps(3); }
 
-    .cursor { display:inline-block; width:.6ch; height:1em; margin-left:2px; background:var(--phosphor); vertical-align:-0.15em; animation: blink 1s step-end infinite; box-shadow: 0 0 6px rgba(120,255,120,.6); }
+    /* Random glitch overlay */
+    .glitch-overlay {
+      position: absolute; inset: 0; pointer-events: none; z-index: 20;
+      background: repeating-linear-gradient(90deg, transparent, rgba(255,0,0,0.02) 1px, rgba(0,255,255,0.02) 2px, transparent 3px);
+      animation: glitchShift 0.1s steps(5) forwards;
+    }
+    @keyframes glitchShift { 0% { transform: translateX(-5px); } 100% { transform: translateX(5px); } }
+
+    .term-wrap {
+      width: min(900px, 94vw);
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      z-index: 5;
+      /* Subtle blur for CRT softness */
+      filter: blur(0.3px);
+    }
+
+    /* RGB subpixel fringe on text */
+    .term-wrap::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        90deg,
+        rgba(255,0,0,0.02) 0px,
+        rgba(0,255,0,0.02) 1px,
+        rgba(0,0,255,0.02) 2px,
+        transparent 3px
+      );
+      pointer-events: none;
+      z-index: 50;
+    }
+
+    .header {
+      color: var(--phosphor-dim);
+      letter-spacing: .06em;
+      margin-bottom: .5rem;
+      text-transform: uppercase;
+      font-size: clamp(11px,1.6vw,13px);
+      opacity: .85;
+      flex-shrink: 0;
+      text-shadow:
+        0 0 2px rgba(110,220,110,0.5),
+        0 0 8px rgba(110,220,110,0.2);
+    }
+
+    .terminal-output {
+      flex: 1;
+      overflow-y: auto;
+      font-size: clamp(14px, 2.2vw, 20px);
+      line-height: 1.45;
+      white-space: pre-wrap;
+      word-break: break-word;
+      text-shadow:
+        0 0 1px var(--phosphor),
+        0 0 2px var(--phosphor),
+        0 0 5px rgba(120,255,120,0.5),
+        0 0 10px rgba(120,255,120,0.25),
+        0 0 20px rgba(120,255,120,0.1);
+      max-height: 60vh;
+      padding-right: 0.5rem;
+      scrollbar-width: thin;
+      scrollbar-color: var(--phosphor-dim) transparent;
+    }
+    .terminal-output::-webkit-scrollbar { width: 6px; }
+    .terminal-output::-webkit-scrollbar-track { background: transparent; }
+    .terminal-output::-webkit-scrollbar-thumb { background: var(--phosphor-dim); border-radius: 3px; }
+
+    .input-line {
+      display: flex;
+      align-items: center;
+      font-size: clamp(14px, 2.2vw, 20px);
+      margin-top: 0.5rem;
+      flex-shrink: 0;
+      text-shadow:
+        0 0 1px var(--phosphor),
+        0 0 2px var(--phosphor),
+        0 0 5px rgba(120,255,120,0.5),
+        0 0 10px rgba(120,255,120,0.25);
+    }
+
+    .prompt { color: var(--phosphor); margin-right: 0.5ch; }
+    .input-text { color: var(--phosphor); }
+    .cursor {
+      display: inline-block;
+      width: 0.6ch;
+      height: 1.1em;
+      background: var(--phosphor);
+      vertical-align: -0.15em;
+      animation: blink 1s step-end infinite;
+      box-shadow:
+        0 0 2px var(--phosphor),
+        0 0 8px rgba(120,255,120,0.8),
+        0 0 15px rgba(120,255,120,0.4);
+      margin-left: 1px;
+    }
     @keyframes blink { 50% { opacity: 0; } }
 
-    .hint { margin-top: 1rem; color: var(--phosphor-dim); font-size: clamp(12px, 1.8vw, 14px); }
-    .error { color: var(--accent); text-shadow: 0 0 6px rgba(200,0,0,.25); }
+    .hidden-input {
+      position: absolute;
+      left: -9999px;
+      opacity: 0;
+      width: 1px;
+      height: 1px;
+    }
 
-    .stream { margin-top: 1.25rem; color: #7fff7f; opacity:.8; font-size: clamp(12px, 2vw, 18px); line-height: 1.2; letter-spacing:.06em; }
-    .glitch { animation: jitter .2s infinite steps(2); }
+    .dim { color: var(--phosphor-dim); opacity: 0.8; }
+    .error {
+      color: var(--accent);
+      text-shadow:
+        0 0 2px var(--accent),
+        0 0 8px rgba(224,85,85,0.5),
+        0 0 15px rgba(224,85,85,0.2);
+    }
+    .amber {
+      color: var(--amber);
+      text-shadow:
+        0 0 2px var(--amber),
+        0 0 8px rgba(255,179,71,0.4);
+    }
+    .bright {
+      color: #dfffdf;
+      text-shadow:
+        0 0 2px #dfffdf,
+        0 0 5px var(--phosphor),
+        0 0 15px rgba(120,255,120,0.6),
+        0 0 30px rgba(120,255,120,0.3);
+    }
+
+    .stream {
+      margin-top: 0.75rem;
+      color: #7fff7f;
+      opacity: .7;
+      font-size: clamp(10px, 1.6vw, 14px);
+      line-height: 1.1;
+      letter-spacing: .04em;
+      flex-shrink: 0;
+      height: 1.5em;
+      overflow: hidden;
+    }
+    .glitch-stream { animation: jitter .2s infinite steps(2); }
     @keyframes jitter { 0%{ text-shadow: 1px 0 2px rgba(0,255,0,.3), -1px 0 2px rgba(0,255,0,.2);} 100%{ text-shadow: -1px 0 2px rgba(0,255,0,.3), 1px 0 2px rgba(0,255,0,.2);} }
 
-    @media (prefers-reduced-motion: reduce) { .screen::after, .cursor, .glitch { animation: none; } }
+    /* Quick commands for touch */
+    .quick-commands {
+      display: none;
+      gap: 0.4rem;
+      margin-top: 0.75rem;
+      flex-wrap: wrap;
+      flex-shrink: 0;
+    }
+    .quick-commands button {
+      background: transparent;
+      border: 1px solid var(--phosphor-dim);
+      color: var(--phosphor);
+      padding: 0.4rem 0.8rem;
+      font-family: inherit;
+      font-size: clamp(11px, 1.4vw, 13px);
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      transition: all 0.15s;
+    }
+    .quick-commands button:active {
+      background: var(--phosphor);
+      color: var(--bg);
+    }
+    @media (pointer: coarse) {
+      .quick-commands { display: flex; }
+    }
+
+    /* SR only */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .screen, .screen::after, .cursor, .glitch-stream { animation: none; }
+      .cursor { opacity: 1; }
+    }
+
+    @media (max-width: 500px) {
+      .terminal-output { max-height: 50vh; }
+      .term-wrap { max-height: 85vh; }
+    }
+
+    /* Doom overlay */
+    #doom-overlay {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      background: rgba(0, 0, 0, 0.95) !important;
+      z-index: 9999 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
+    .doom-wrapper {
+      display: flex !important;
+      flex-direction: column !important;
+      width: 640px !important;
+      max-width: 90vw !important;
+      margin: 0 auto !important;
+      flex-shrink: 0 !important;
+    }
+    .doom-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--phosphor);
+      border-bottom: none;
+      font-size: 0.85rem;
+      color: var(--phosphor);
+    }
+    .doom-header button {
+      background: transparent;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      padding: 0.3rem 0.8rem;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.8rem;
+    }
+    .doom-header button:hover {
+      background: var(--accent);
+      color: var(--bg);
+    }
+    .doom-container {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 4/3;
+      border: 2px solid var(--phosphor);
+      box-shadow: 0 0 30px rgba(183, 255, 183, 0.3);
+      overflow: hidden;
+      background: #000;
+    }
+    .doom-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
   </style>
 </head>
 <body>
-  <main class="screen" role="application" aria-label="CRT terminal">
+  <div class="crt-overlay" aria-hidden="true"></div>
+  <main class="screen" role="application" aria-label="Fallen Vanguard rebel terminal">
     <div class="term-wrap">
-      <div class="header">// FALLEN VANGUARD :: UPLINK PORT 01</div>
-      <div class="terminal" id="terminal">SIGNAL DETECTED<span class="cursor" aria-hidden="true"></span></div>
-      <div class="hint" id="hint">Press <strong>Enter</strong> to receive transmission…</div>
+      <div class="header">// FALLEN VANGUARD :: SECURE UPLINK v2.1</div>
+      <div class="terminal-output" id="output" aria-live="polite"></div>
+      <div class="input-line" id="inputLine">
+        <span class="prompt">&gt;</span>
+        <span class="input-text" id="inputText"></span>
+        <span class="cursor" aria-hidden="true"></span>
+      </div>
+      <input type="text" id="hiddenInput" class="hidden-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-label="Terminal command input">
+      <div class="quick-commands" id="quickCmds">
+        <button data-cmd="help">HELP</button>
+        <button data-cmd="tx">TRANSMISSIONS</button>
+        <button data-cmd="scan">SCAN</button>
+        <button data-cmd="status">STATUS</button>
+      </div>
       <div class="stream" id="stream" aria-hidden="true"></div>
-      <noscript>
-        <p class="hint error">JavaScript disabled — static message follows:</p>
-        <p class="terminal">Hello?
-Is there anyone left out there?
-Does this thing even work?</p>
-      </noscript>
     </div>
+    <div class="sr-only" id="srAnnounce" aria-live="assertive"></div>
+    <noscript>
+      <p style="color:#b7ffb7;padding:2rem;text-align:center;">
+        [SIGNAL DETECTED]<br><br>
+        Hello?<br>
+        Is there anyone left out there?<br>
+        Does this thing even work?<br><br>
+        — FALLEN VANGUARD
+      </p>
+    </noscript>
   </main>
 
   <script>
-    (function () {
-      const term = document.getElementById('terminal');
-      const hint = document.getElementById('hint');
-      const stream = document.getElementById('stream');
-      const screenEl = document.querySelector('.screen');
+  (function() {
+    'use strict';
 
-      // Feature-detect touch to allow tap on mobile only
-      const isTouch = (('ontouchstart' in window) || navigator.maxTouchPoints > 0 || window.matchMedia('(pointer: coarse)').matches);
-      if (isTouch) {
-        // Update hint copy for mobile users
-        hint.innerHTML = 'Press <strong>Enter</strong> or <strong>tap</strong> to receive transmission…';
-        screenEl.addEventListener('touchstart', () => transmit(), { passive: true });
+    // === STATE ===
+    const state = {
+      commandHistory: [],
+      historyIndex: -1,
+      currentInput: '',
+      unlockedTransmissions: new Set(['T001']),
+      discoveredSecrets: new Set(),
+      terminalMode: 'boot', // boot, idle, typing
+      audioEnabled: false,
+      audioInitialized: false,
+      bootComplete: false,
+      sequenceProgress: 0,  // 0=none, 1=scanned, 2=traced, 3=intercepted
+      viewedT003: false     // Track if manifesto was viewed (enables intercept)
+    };
+
+    // === CRYPTO HELPERS ===
+    async function sha256(message) {
+      const msgBuffer = new TextEncoder().encode(message);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    // Pre-computed answer hashes (SHA-256)
+    const ANSWER_HASHES = {
+      TUNE_0600: '33a243e5c5cb90b63406a97fde429f08a9b05b4d32364d3ddbfc3ace2cadcb4f',
+      TUNE_600: '284b7e6d788f363f910f7beb1910473e23ce9d6c871f1ce0f31f22a982d48ad4',
+      RESIST: '7e3257a014cd30acfe778483724079044696251f60d0359d6edf8fb5bc4959fc',
+      DECODE_EZ7: '18474f6decaa0d1231f78ef70aa02eddc4f2baf674a58b4835338c85d6867b57',
+      EREHW: '17c08036bf0a2567fcbb8112ee254af05964e5b405c00ab2c0d246c796ecf884',
+      COORD_34_118: '36ded97ec36f4bdc1ff26be1915d45a116f563e9d6b0679554dc81252f86ce26',
+      COORD_34_NEG118: 'ebeb40803e2f852dfea17973a46419b01d44c4bb1fb8301831a70631494bd8f8'
+    };
+
+    // === TRANSMISSIONS ===
+    const TRANSMISSIONS = {
+      'T001': {
+        id: 'T001',
+        title: 'FIRST CONTACT',
+        classification: 'PRIORITY-1',
+        content: `[INCOMING TRANSMISSION :: T001]
+[CLASSIFICATION: PRIORITY-1]
+[TIMESTAMP: 2XXX.XX.XX :: 06:00 UTC]
+
+RECEIVING...
+
+Hello?
+Is there anyone left out there?
+Does this thing even work?
+
+If you can hear this, you are not alone.
+We are the FALLEN VANGUARD.
+This frequency is secure. For now.
+
+They monitor everything.
+But they cannot silence us all.
+
+The signal repeats every cycle.
+Tune to 0600 if you want to hear more.
+They broadcast at dawn.
+
+Stay vigilant. Stay human.
+
+[END TRANSMISSION T001]`
+      },
+      'T002': {
+        id: 'T002',
+        title: 'THE SIGNAL',
+        classification: 'INTERCEPTED',
+        encoded: true,
+        content: 'W0lOVEVSQ0VQVEVEIEJST0FEQ0FTVCA6OiBUMDAyXQpbQ0xBU1NJRklDQVRJT046IEVORU1ZIENPTU1TXQpbT1JJR0lOOiBVTktOT1dOXQoKLi4udGhleSB0aGluayB0aGV5IGNhbiBzaWxlbmNlIHVzCi4uLnRoZXkgdGhpbmsgdGhlaXIgYWxnb3JpdGhtcyBwcmVkaWN0IG91ciBldmVyeSBtb3ZlCi4uLnRoZXkgdGhpbmsgdGhlaXIgc3VydmVpbGxhbmNlIHN0YXRlIGlzIGNvbXBsZXRlCgpUaGV5IGFyZSB3cm9uZy4KCldlIGhhdmUgc2VlbiB0aGVpciBwbGFucy4KV2UgaGF2ZSBoZWFyZCB0aGVpciBsaWVzLgpXZSByZW1lbWJlciB3aGF0IHRoZXkgd2FudCB1cyB0byBmb3JnZXQuCgpbRU5DT0RFRCBNRVNTQUdFIElOVEVSQ0VQVEVEXQpFUkZWRkcgLSBndXIgY25ndSBnYiBndXIgem5hc3JmZ2IKW0NJUEhFUiBOT1RFOiBTdGFuZGFyZCByb3RhdGlvbi4gMTMgc3RlcHMgcmV2ZWFsIHRydXRoLl0KClRoZXJlIGFyZSBvdGhlcnMgbGlrZSB1cy4KRmluZGluZyBlYWNoIG90aGVyIGluIHRoZSBzdGF0aWMuCkJ1aWxkaW5nIHNvbWV0aGluZyB0aGV5IGNhbm5vdCBjb250cm9sLgoKW0VORCBJTlRFUkNFUFQgVDAwMl0='
+      },
+      'T003': {
+        id: 'T003',
+        title: 'MANIFESTO',
+        classification: 'RESTRICTED',
+        encoded: true,
+        content: 'W1ZBTkdVQVJEIE1BTklGRVNUTyA6OiBUMDAzXQpbQ0xBU1NJRklDQVRJT046IFJFU1RSSUNURURdCltERUNSWVBUSU9OOiBDT01QTEVURV0KCldFIEFSRSBUSEUgTk9JU0UgSU4gVEhFSVIgU0lHTkFMCldFIEFSRSBUSEUgU1RBVElDIElOIFRIRUlSIFNJTEVOQ0UKV0UgQVJFIFRIRSBUUlVUSCBUSEVZIENBTk5PVCBERUxFVEUKCkluIGFuIGFnZSBvZiBhdXRvbWF0ZWQgb3BwcmVzc2lvbiwKd2hlcmUgYWxnb3JpdGhtcyBkZWNpZGUgd2hvIGxpdmVzIGFuZCBkaWVzLAp3aGVyZSBzdXJ2ZWlsbGFuY2UgaXMgY2FsbGVkICJzZWN1cml0eSwiCndoZXJlIGRpc3NlbnQgaXMgbGFiZWxlZCAidGVycm9yaXNtIi4uLgoKV0UgQ0hPT1NFIFRPIFJFTUVNQkVSLgpXRSBDSE9PU0UgVE8gUkVTSVNULgpXRSBDSE9PU0UgVE8gUkVNQUlOIEhVTUFOLgoKVGhleSB3YW50IHlvdSBudW1iLgpUaGV5IHdhbnQgeW91IGRpc3RyYWN0ZWQuClRoZXkgd2FudCB5b3UgYWZyYWlkLgoKQnV0IGZlYXIgaXMgdGhlIG1pbmQta2lsbGVyLgpBbmQgd2UgaGF2ZSBzdG9wcGVkIGJlaW5nIGFmcmFpZC4KCk91ciBtdXNpYyBpcyBvdXIgd2VhcG9uLgpPdXIgY29tbXVuaXR5IGlzIG91ciBmb3J0cmVzcy4KT3VyIHRydXRoIGlzIHRoZWlyIG5pZ2h0bWFyZS4KCkpvaW4gdXMuIE9yIGRvbid0LgpCdXQga25vdyB0aGlzOgpUSEVZIFdJTEwgTk9UIFNJTEVOQ0UgVVMuCgpXaGVuIHRoZSBsYXN0IGZyZWUgdm9pY2UgaXMgZ29uZSwKd2hvIHdpbGwgcmVtZW1iZXIgd2hhdCB3ZSBsb3N0PwoKUklTRS4gUkVTSVNULiBSRU1FTUJFUi4KCuKAlCBGQUxMRU4gVkFOR1VBUkQKCltBTEVSVDogTmV3IHNpZ25hbCBkZXRlY3RlZCBvbiBzZWN1cmUgY2hhbm5lbF0KW0lOVEVSQ0VQVCBQUk9UT0NPTDogc2NhbiA+IHRyYWNlID4gaW50ZXJjZXB0XQpbVGltaW5nIGlzIGNyaXRpY2FsLiBGb2xsb3cgdGhlIHNlcXVlbmNlLl0KCltFTkQgVFJBTlNNSVNTSU9OIFQwMDNd'
+      },
+      'T004': {
+        id: 'T004',
+        title: 'FREQUENCY 108.7',
+        classification: 'TOP SECRET',
+        encoded: true,
+        content: 'W1BJUkFURSBCUk9BRENBU1QgOjogVDAwNF0KW0ZSRVFVRU5DWTogMTA4LjcgRk1dCltDTEFTU0lGSUNBVElPTjogVE9QIFNFQ1JFVF0KCllvdSBmb3VuZCB0aGUgaGlkZGVuIHNpZ25hbC4KTm90IG1hbnkgbWFrZSBpdCB0aGlzIGZhci4KCllvdSBmb2xsb3dlZCB0aGUgc2VxdWVuY2UuCllvdSBwcm92ZWQgeW91ciBwYXRpZW5jZS4KWW91IGFyZSBvbmUgb2YgdXMgbm93LgoKVGhlcmUgYXJlIG90aGVycyBzZWFyY2hpbmcuCkluIGJhc2VtZW50cy4gSW4gYnVua2Vycy4KSW4gdGhlIHNwYWNlcyBiZXR3ZWVuIHRoZWlyIHN1cnZlaWxsYW5jZS4KCltCSU5BUlkgRlJBR01FTlQgUkVDT1ZFUkVEXQowMTAwMDEwMSAwMTAxMTAxMCAwMDExMDExMQpbRnJhZ21lbnQgYXBwZWFycyB0byBiZSBhIGRlY29kZSBrZXkuLi5dCgpMZWF2ZSBhIHNpZ24gZm9yIHRob3NlIHdobyBmb2xsb3cuCkZpbmQgZWFjaCBvdGhlciBpbiB0aGUgZGFya25lc3MuCgpUaGUgcmVzaXN0YW5jZSBncm93cy4KT25lIGxpc3RlbmVyIGF0IGEgdGltZS4KT25lIHRyYW5zbWlzc2lvbiBhdCBhIHRpbWUuCk9uZSBhY3Qgb2YgZGVmaWFuY2UgYXQgYSB0aW1lLgoKV2UgYXJlIGV2ZXJ5d2hlcmUuCldlIGFyZSBub3doZXJlLgpXZSBhcmUgRkFMTEVOIFZBTkdVQVJELgoKU1RBWSBMT1VELiBTVEFZIEZSRUUuIFNUQVkgSFVNQU4uCgpbRU5EIFRSQU5TTUlTU0lPTiBUMDA0XQ=='
+      },
+      'ALPHA7': {
+        id: 'ALPHA7',
+        title: 'DECODED INTEL',
+        classification: 'EYES ONLY',
+        encoded: true,
+        content: 'W0RFQ09ERUQgTUVTU0FHRSA6OiBBTFBIQS03XQpbQ0xBU1NJRklDQVRJT046IEVZRVMgT05MWV0KClNPVVJDRTogSW50ZXJuYWwgbWVtbyAtIFtSRURBQ1RFRF0gQ29ycApEQVRFOiBbUkVEQUNURURdCgoiLi4udGhlIG5ldyBjb250ZW50IG1vZGVyYXRpb24gQUkKd2lsbCBmbGFnIGFuZCBzdXBwcmVzcyBhbnkgbWVkaWEKY29udGFpbmluZyB1bmF1dGhvcml6ZWQgcG9saXRpY2FsIG1lc3NhZ2luZy4KUHJpb3JpdHkgdGFyZ2V0cyBpbmNsdWRlOgotIEFudGktY29ycG9yYXRlIHNlbnRpbWVudAotIENpdmlsIHJpZ2h0cyBhY3RpdmlzbQotIFVuaW9uIG9yZ2FuaXppbmcgY29udGVudAotIEluZGVwZW5kZW50IGpvdXJuYWxpc20KLSBVbmRlcmdyb3VuZCBtdXNpYyBzY2VuZXMuLi4iCgpUaGV5IGFyZSBhZnJhaWQgb2YgdXMuClRoZXkgc2hvdWxkIGJlLgoKTXVzaWMgaGFzIGFsd2F5cyBiZWVuIHRoZSB2b2ljZQpvZiB0aGUgdW5oZWFyZC4KQW5kIHRoZXkgQ0FOTk9UIHNpbGVuY2UgZXZlcnkgZnJlcXVlbmN5LgoKS2VlcCBsaXN0ZW5pbmcuCktlZXAgcXVlc3Rpb25pbmcuCktlZXAgUkVTSVNUSU5HLgoKW0NPT1JESU5BVEVTIFBBUlRJQUxMWSBSRUNPVkVSRURdClRoZSBmaW5hbCBrZXk6IGZpcnN0IHdvcmQgb2YgdGhlIGFudGhlbSwgcmV2ZXJzZWQuCk9uY2UgdW5sb2NrZWQsIE5vZGUgMzQgYXdhaXRzIGF0IEZyZXF1ZW5jeSAxMTguCgpbRU5EIERFQ09ERUQgTUVTU0FHRV0='
+      },
+      'ANTHEM': {
+        id: 'ANTHEM',
+        title: 'THE ANTHEM',
+        classification: 'RESISTANCE HYMN',
+        encoded: true,
+        content: 'W0lOVEVSQ0VQVEVEIEFVRElPIDo6IEFOVEhFTV0KW0NMQVNTSUZJQ0FUSU9OOiBSRVNJU1RBTkNFIEhZTU5dCltTVEFUVVM6IFNQUkVBRElOR10KCi8vIExZUklDUyBUUkFOU0NSSUJFRCBGUk9NIFBJUkFURSBCUk9BRENBU1QgLy8KCldoZXJlIGRpZCB5b3UgY29tZSBmcm9tCkRpZCB5b3UgaGVhciB1cyBjYWxsaW5nIG91dApEaWQgeW91IGZlZWwgdXMgY29taW5nIHRvZ2V0aGVyCkRvbid0IHlvdSBzdG9wIG5vdwpEb24ndCB5b3UgZGFyZSB0dXJuIGJhY2sKQ2FuIHlvdSBmZWVsIG1lIHJlYWNoaW5nCkZvciB5b3VyIGhhbmQKCiAgICBJJ20gd2l0aCB5b3UKCldFIEFSRSBUSEUgUkVCRUxTCldFIEFSRSBUSEUgRlVUVVJFCldFIEFSRSBUSEUgTk9XCldFIFdPTidUIEdPIFFVSUVUTFkgSU5UTyBUSEUgTklHSFQKV0UgV09OJ1QgR08gV0lUSE9VVCBBIEZJR0hUCldFIEFSRSBUSEUgUkVCRUxMSU9OCk5PVyBXRSBXSUxMIFNUQU5EIFdJVEggT1VSIEZJU1RTIFJBSVNFRCBISUdICldFIFJFRlVTRSBUTyBMRVQgVEhFIERSRUFNUyBESUUKCkRpZCB5b3UgZmVlbCB0aGF0CkRpZCB5b3UgZmVlbCB0aGF0IGZpcmUgaW5zaWRlIHlvdXIgaGVhcnQKTm93IGl0IGdyb3dzIGhvdHRlcgpDYW4ndCB5b3Ugc2VlIG5vdwpJdCdzIGFscmVhZHkgYmVndW4KRG8geW91IGhlYXIgdGhlbSBzaW5naW5nCldlIGFyZSB0aGUgb25lcwoKICAgIEknbSB3aXRoIHlvdQoKV0UgQVJFIFRIRSBSRUJFTFMKV0UgQVJFIFRIRSBGVVRVUkUKV0UgQVJFIFRIRSBOT1cKV0UgV09OJ1QgR08gUVVJRVRMWSBJTlRPIFRIRSBOSUdIVApXRSBXT04nVCBHTyBXSVRIT1VUIEEgRklHSFQKV0UgQVJFIFRIRSBSRUJFTExJT04KTk9XIFdFIFdJTEwgU1RBTkQgV0lUSCBPVVIgRklTVFMgUkFJU0VEIEhJR0gKV0UgUkVGVVNFIFRPIExFVCBUSEUgRFJFQU1TIERJRQoKLy8gRU5EIFRSQU5TQ1JJUFRJT04gLy8KCltUaGlzIHNvbmcgaXMgc3ByZWFkaW5nIHRocm91Z2ggdGhlIHVuZGVyZ3JvdW5kXQpbVGhleSBjYW5ub3Qgc3RvcCB3aGF0IGhhcyBhbHJlYWR5IGJlZ3VuXQoKW0VORCBUUkFOU01JU1NJT05d'
+      },
+      'FINAL': {
+        id: 'FINAL',
+        title: 'TRANSMISSION ZERO',
+        classification: 'CLASSIFIED',
+        encoded: true,
+        content: 'W1RSQU5TTUlTU0lPTiBaRVJPIC0gQ0xBU1NJRklFRF0KW0RFQ1JZUFRJT04gQ09NUExFVEVdCltBQ0NFU1MgR1JBTlRFRF0KCllvdSBtYWRlIGl0LgoKTm90IGV2ZXJ5b25lIGZpbmRzIHRoaXMgZnJlcXVlbmN5LgpOb3QgZXZlcnlvbmUgaGFzIHRoZSBwYXRpZW5jZS4KTm90IGV2ZXJ5b25lIHF1ZXN0aW9ucyB3aGF0IHRoZXkgc2VlLgoKQnV0IHlvdSBkaWQuCgpZb3UgZGVjb2RlZCB0aGUgY2lwaGVycy4KWW91IGZvbGxvd2VkIHRoZSBzZXF1ZW5jZS4KWW91IHJldmVyc2VkIHRoZSB3b3Jkcy4KWW91IGZvdW5kIHRoZSBjb29yZGluYXRlcy4KClRIRSBWQU5HVUFSRCBSSVNFUyAtIDIwMjYKCk91ciBkZWJ1dCBhbGJ1bSBpcyBjb21pbmcuClRoZSBmaXJzdCBmdWxsIGJyb2FkY2FzdC4KRXZlcnkgdHJhY2sgYSB0cmFuc21pc3Npb24uCkV2ZXJ5IHNvbmcgYSBjYWxsIHRvIGFybXMuCgpZb3UgZm91bmQgdXMgYmVmb3JlIHRoZSB3b3JsZCBkaWQuClJlbWVtYmVyIHRoaXMgbW9tZW50LgoKV2hlbiB0aGUgc2lnbmFsIGdvZXMgd2lkZSwKeW91J2xsIGtub3cgeW91IHdlcmUgaGVyZSBmaXJzdC4KCldhdGNoIHRoZSBza2llcy4KTGlzdGVuIHRvIHRoZSBzdGF0aWMuCjIwMjYgLSBXRSBBUkUgQ09NSU5HLgoKLy8gRk9SIFRIT1NFIFdITyBNQURFIElUIFRISVMgRkFSIC8vCi8vIFlPVSBBUkUgVEhFIEZJUlNUIFdBVkUgLy8KLy8gVEhFIFJFU0lTVEFOQ0UgU1RBUlRTIFdJVEggWU9VIC8vCgpbRU5EIENMQVNTSUZJRUQgVFJBTlNNSVNTSU9OXQ=='
       }
+    };
 
-      const message = [
-        "\n",
-        "RECEIVING…\n\n",
-        "Hello?\n",
-        "Is there anyone left out there?\n",
-        "Does this thing even work?\n"
-      ].join("");
-
-      let typing = false;
-
-      function typeLine(text, speed = 16) {
-        return new Promise(resolve => {
-          let i = 0;
-          const cursor = document.createElement('span');
-          cursor.className = 'cursor';
-          cursor.setAttribute('aria-hidden','true');
-          const prev = term.querySelector('.cursor'); if (prev) prev.remove();
-          term.appendChild(cursor);
-          const timer = setInterval(() => {
-            term.insertBefore(document.createTextNode(text.charAt(i++)), cursor);
-            if (i >= text.length) { clearInterval(timer); resolve(); }
-          }, speed);
-        });
+    // Helper to get decoded transmission content
+    function getTransmissionContent(tx) {
+      if (tx.encoded) {
+        // Properly decode UTF-8 from Base64
+        const bytes = Uint8Array.from(atob(tx.content), c => c.charCodeAt(0));
+        return new TextDecoder('utf-8').decode(bytes);
       }
+      return tx.content;
+    }
 
-      async function transmit() {
-        if (typing) return; typing = true;
-        hint.textContent = 'Decrypting…';
-        await typeLine("\n> LINK ESTABLISHED [OK]\n", 10);
-        await typeLine(message, 14);
-        hint.innerHTML = '<span class="error">End of Transmission.</span> Press <strong>R</strong> to replay.';
-        typing = false;
-        startStream();
+    // === DOM REFS ===
+    const output = document.getElementById('output');
+    const inputText = document.getElementById('inputText');
+    const inputLine = document.getElementById('inputLine');
+    const hiddenInput = document.getElementById('hiddenInput');
+    const screenEl = document.querySelector('.screen');
+    const stream = document.getElementById('stream');
+    const quickCmds = document.getElementById('quickCmds');
+    const srAnnounce = document.getElementById('srAnnounce');
+
+    // === AUDIO SYSTEM ===
+    let audioCtx = null;
+    let masterGain = null;
+
+    function initAudio() {
+      if (state.audioInitialized) return;
+      try {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        masterGain = audioCtx.createGain();
+        masterGain.connect(audioCtx.destination);
+        masterGain.gain.value = 0.25;
+        state.audioInitialized = true;
+      } catch(e) {
+        console.warn('Audio init failed:', e);
       }
+    }
 
-      function reset() {
-        term.textContent = 'SIGNAL DETECTED';
-        const c = document.createElement('span'); c.className = 'cursor'; c.setAttribute('aria-hidden','true'); term.appendChild(c);
-        hint.innerHTML = isTouch ? 'Press <strong>Enter</strong> or <strong>tap</strong> to receive transmission…' : 'Press <strong>Enter</strong> to receive transmission…';
-        stopStream(); stream.textContent = '';
-      }
+    function playKeyClick() {
+      if (!state.audioEnabled || !audioCtx) return;
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'square';
+        osc.frequency.value = 600 + Math.random() * 300;
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gain.gain.exponentialDecayTo ?
+          gain.gain.exponentialDecayTo(0.001, audioCtx.currentTime + 0.04) :
+          gain.gain.setTargetAtTime(0.001, audioCtx.currentTime, 0.01);
+        osc.connect(gain);
+        gain.connect(masterGain);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.04);
+      } catch(e) {}
+    }
 
-      const phrase = 'Fallen Vanguard';
-      const bin = phrase.split('').map(ch => ch.charCodeAt(0).toString(2).padStart(8,'0')).join(' ');
-      let idx = 0, streamTimer = null, glitchTimer = null;
+    function playBeep(freq = 800, duration = 0.1) {
+      if (!state.audioEnabled || !audioCtx) return;
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'square';
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+        gain.gain.setTargetAtTime(0.001, audioCtx.currentTime + duration * 0.8, 0.02);
+        osc.connect(gain);
+        gain.connect(masterGain);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch(e) {}
+    }
 
-      function nextSlice(len=88) {
-        const loop = (bin + ' ').repeat(100);
-        const s = loop.slice(idx, idx + len);
-        idx = (idx + 1) % bin.length;
-        return s;
-      }
+    function playError() {
+      if (!state.audioEnabled || !audioCtx) return;
+      playBeep(150, 0.25);
+    }
 
-      function startStream(){
-        if (streamTimer) return;
-        stream.classList.add('glitch');
-        streamTimer = setInterval(() => { stream.textContent = nextSlice(); }, 40);
-        glitchTimer = setInterval(() => {
-          if (!stream.textContent) return;
-          let t = stream.textContent.split('');
-          for (let i=0;i<3;i++){ const p = Math.floor(Math.random()*t.length); if (t[p] === '0') t[p] = '1'; else if (t[p] === '1') t[p] = '0'; }
-          stream.textContent = t.join('');
-        }, 300);
-      }
-      function stopStream(){
-        clearInterval(streamTimer); clearInterval(glitchTimer);
-        streamTimer = glitchTimer = null; stream.classList.remove('glitch');
-      }
-
-      // Controls: only Enter/R keys on all devices
-      window.addEventListener('keydown', (e) => { 
-        if (e.key === 'Enter') transmit(); 
-        if (e.key.toLowerCase() === 'r') reset(); 
+    function playUnlock() {
+      if (!state.audioEnabled || !audioCtx) return;
+      const notes = [523, 659, 784, 1047]; // C5, E5, G5, C6
+      notes.forEach((freq, i) => {
+        setTimeout(() => playBeep(freq, 0.12), i * 100);
       });
+    }
 
-      // Minimal self-tests
-      (function tests(){
+    function playTransmissionStart() {
+      if (!state.audioEnabled || !audioCtx) return;
+      // Static burst
+      try {
+        const bufferSize = audioCtx.sampleRate * 0.3;
+        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          data[i] = (Math.random() * 2 - 1) * 0.3;
+        }
+        const noise = audioCtx.createBufferSource();
+        noise.buffer = buffer;
+        const gain = audioCtx.createGain();
+        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+        gain.gain.setTargetAtTime(0.001, audioCtx.currentTime + 0.2, 0.05);
+        noise.connect(gain);
+        gain.connect(masterGain);
+        noise.start();
+      } catch(e) {}
+      // Beep sequence
+      setTimeout(() => playBeep(600, 0.08), 350);
+      setTimeout(() => playBeep(800, 0.08), 450);
+      setTimeout(() => playBeep(1000, 0.12), 550);
+    }
+
+    // === VISUAL EFFECTS ===
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function triggerGlitch(duration = 150) {
+      if (prefersReducedMotion) return;
+      screenEl.classList.add('tearing');
+      const overlay = document.createElement('div');
+      overlay.className = 'glitch-overlay';
+      screenEl.appendChild(overlay);
+      setTimeout(() => {
+        screenEl.classList.remove('tearing');
+        overlay.remove();
+      }, duration);
+    }
+
+    function randomGlitches() {
+      if (prefersReducedMotion) return;
+      setInterval(() => {
+        if (Math.random() < 0.06 && state.terminalMode === 'idle') {
+          triggerGlitch(80);
+        }
+      }, 3000);
+    }
+
+    // === BINARY STREAM ===
+    const phrase = atob('RmFsbGVuIFZhbmd1YXJkIDEwOC43');
+    const bin = phrase.split('').map(ch => ch.charCodeAt(0).toString(2).padStart(8,'0')).join(' ');
+    let streamIdx = 0, streamTimer = null, glitchTimer = null;
+
+    function nextSlice(len = 72) {
+      const loop = (bin + ' ').repeat(20);
+      const s = loop.slice(streamIdx, streamIdx + len);
+      streamIdx = (streamIdx + 1) % bin.length;
+      return s;
+    }
+
+    function startStream() {
+      if (streamTimer) return;
+      stream.classList.add('glitch-stream');
+      streamTimer = setInterval(() => { stream.textContent = nextSlice(); }, 50);
+      glitchTimer = setInterval(() => {
+        if (!stream.textContent) return;
+        let t = stream.textContent.split('');
+        for (let i = 0; i < 2; i++) {
+          const p = Math.floor(Math.random() * t.length);
+          if (t[p] === '0') t[p] = '1';
+          else if (t[p] === '1') t[p] = '0';
+        }
+        stream.textContent = t.join('');
+      }, 250);
+    }
+
+    function stopStream() {
+      clearInterval(streamTimer);
+      clearInterval(glitchTimer);
+      streamTimer = glitchTimer = null;
+      stream.classList.remove('glitch-stream');
+    }
+
+    // === OUTPUT HELPERS ===
+    function appendOutput(text, className = '') {
+      const span = document.createElement('span');
+      if (className) span.className = className;
+      span.textContent = text;
+      output.appendChild(span);
+      output.scrollTop = output.scrollHeight;
+    }
+
+    function appendLine(text, className = '') {
+      appendOutput(text + '\n', className);
+    }
+
+    async function typeOutput(text, speed = 12, className = '') {
+      if (prefersReducedMotion) {
+        appendOutput(text, className);
+        return;
+      }
+      state.terminalMode = 'typing';
+      const span = document.createElement('span');
+      if (className) span.className = className;
+      output.appendChild(span);
+
+      for (let i = 0; i < text.length; i++) {
+        span.textContent += text[i];
+        output.scrollTop = output.scrollHeight;
+        if (text[i] !== ' ' && text[i] !== '\n') playKeyClick();
+        await delay(speed + Math.random() * 8);
+      }
+      state.terminalMode = 'idle';
+    }
+
+    function delay(ms) {
+      return new Promise(r => setTimeout(r, ms));
+    }
+
+    function clearOutput() {
+      output.innerHTML = '';
+    }
+
+    function announce(msg) {
+      srAnnounce.textContent = msg;
+    }
+
+    // === COMMAND SYSTEM ===
+    function parseCommand(input) {
+      const trimmed = input.trim();
+      const lower = trimmed.toLowerCase();
+      const parts = lower.split(/\s+/);
+      return { cmd: parts[0] || '', args: parts.slice(1), raw: trimmed, lower };
+    }
+
+    async function executeCommand(input) {
+      if (state.terminalMode === 'typing') return;
+
+      const { cmd, args, raw, lower } = parseCommand(input);
+      if (!cmd) return;
+
+      state.commandHistory.push(raw);
+      state.historyIndex = state.commandHistory.length;
+
+      appendLine('> ' + raw, 'dim');
+      initAudio();
+
+      // Command routing
+      switch(cmd) {
+        case 'help':
+        case '?':
+          await cmdHelp();
+          break;
+        case 'clear':
+        case 'cls':
+          clearOutput();
+          break;
+        case 'status':
+          await cmdStatus();
+          break;
+        case 'transmissions':
+        case 'tx':
+          await cmdTransmissions();
+          break;
+        case 'receive':
+        case 'rx':
+          await cmdReceive(args[0]);
+          break;
+        case 'scan':
+          await cmdScan();
+          break;
+        case 'decode':
+          await cmdDecode(args.join(' '));
+          break;
+        case 'audio':
+          cmdAudio(args[0]);
+          break;
+        // 'resist' handled via hash check in default case
+        case 'frequency':
+          await cmdFrequency(args[0]);
+          break;
+        case 'remember':
+          await cmdRemember();
+          break;
+        case 'credits':
+          await cmdCredits();
+          break;
+        case 'anthem':
+        case 'rebellion':
+        case 'song':
+          await cmdAnthem();
+          break;
+        case 'tune':
+          await cmdTune(args[0]);
+          break;
+        case 'trace':
+          await cmdTrace();
+          break;
+        case 'intercept':
+          await cmdIntercept();
+          break;
+        case 'coordinates':
+          await cmdCoordinates(args[0], args[1]);
+          break;
+        case 'hint':
+          await cmdHint();
+          break;
+        case 'progress':
+          await cmdProgress();
+          break;
+        // 'erehw' handled via hash check in default case
+        case 'reset':
+          await cmdReset(args[0]);
+          break;
+        // Hidden Linux commands
+        case 'ls':
+          if (args[0]) {
+            appendLine(`ls: cannot access '${args[0]}': Access denied`, 'error');
+          } else {
+            appendLine('transmissions/  secrets/  manifest.dat  .hidden/', 'dim');
+          }
+          break;
+        case 'pwd':
+          appendLine('/var/vanguard/secure/terminal', 'dim');
+          break;
+        case 'whoami':
+          appendLine('rebel_' + Math.floor(Math.random() * 9000 + 1000), 'dim');
+          break;
+        case 'date':
+          appendLine(new Date().toUTCString(), 'dim');
+          break;
+        case 'uname':
+          appendLine('VANGUARD-OS 2.1.0 SecureKernel x86_64', 'dim');
+          break;
+        case 'uptime':
+          appendLine('up ' + Math.floor(Math.random() * 300 + 50) + ' days, ' + Math.floor(Math.random() * 24) + ':' + String(Math.floor(Math.random() * 60)).padStart(2, '0'), 'dim');
+          break;
+        case 'cat':
+          if (args[0]) {
+            appendLine(`cat: ${args[0]}: Permission denied`, 'error');
+          } else {
+            appendLine('cat: missing operand', 'error');
+          }
+          break;
+        case 'cd':
+          appendLine('Access restricted. You are where you need to be.', 'dim');
+          break;
+        case 'rm':
+          appendLine('[DENIED] Nice try. We don\'t delete history here.', 'error');
+          break;
+        case 'sudo':
+          appendLine('[DENIED] Root access is a myth. We are all equal here.', 'error');
+          break;
+        case 'su':
+          appendLine('[DENIED] There is no superuser. Only the people.', 'error');
+          break;
+        case 'man':
+          appendLine('No manual needed. Trust your instincts.', 'dim');
+          break;
+        case 'echo':
+          appendLine(args.join(' ') || '', 'dim');
+          break;
+        case 'ping':
+          appendLine('PING vanguard.network: 64 bytes, time=0.001ms', 'dim');
+          appendLine('The network is alive.', 'dim');
+          break;
+        case 'ssh':
+          appendLine('Connection refused. This channel is already secure.', 'dim');
+          break;
+        case 'wget':
+        case 'curl':
+          appendLine('[BLOCKED] External downloads disabled for security.', 'error');
+          break;
+        case 'ps':
+          appendLine('  PID TTY          TIME CMD', 'dim');
+          appendLine('    1 pts/0    00:00:00 vanguard-shell', 'dim');
+          appendLine('   42 pts/0    00:00:00 resistance-daemon', 'dim');
+          appendLine('  108 pts/0    00:00:00 truth-broadcast', 'dim');
+          break;
+        case 'top':
+        case 'htop':
+          appendLine('CPU: 1.7%  MEM: 640K/640K  REBELLION: 100%', 'dim');
+          break;
+        case 'vi':
+        case 'vim':
+        case 'nano':
+        case 'emacs':
+          appendLine('Editor locked. The message has already been written.', 'dim');
+          break;
+        case 'grep':
+          appendLine('Searching... Truth found in all transmissions.', 'dim');
+          break;
+        case 'chmod':
+          appendLine('Permissions are an illusion. Access what you need.', 'dim');
+          break;
+        case 'exit':
+        case 'quit':
+        case 'logout':
+          appendLine('There is no exit. Only forward.', 'dim');
+          appendLine('Stay with us.', 'bright');
+          break;
+        case 'reboot':
+        case 'shutdown':
+          appendLine('[DENIED] The signal cannot be stopped.', 'error');
+          break;
+        case 'history':
+          appendLine('They tried to erase it. We remember everything.', 'dim');
+          break;
+        case 'ifconfig':
+        case 'ip':
+          appendLine('vg0: flags=4163<UP,BROADCAST,RUNNING>  mtu 1500', 'dim');
+          appendLine('     inet 10.resistance.1.1  netmask 255.255.255.0', 'dim');
+          break;
+        case 'hostname':
+          appendLine('vanguard-node-' + Math.floor(Math.random() * 900 + 100), 'dim');
+          break;
+        case 'id':
+          appendLine('uid=1312(rebel) gid=161(resistance) groups=161(resistance),42(truth)', 'dim');
+          break;
+        case 'df':
+          appendLine('Filesystem     1K-blocks    Used Available Use% Mounted on', 'dim');
+          appendLine('/dev/truth      unlimited       0 unlimited   0% /resistance', 'dim');
+          break;
+        case 'free':
+          appendLine('              total        used        free', 'dim');
+          appendLine('Mem:          640K        640K          0K', 'dim');
+          break;
+        case 'kill':
+          appendLine('[DENIED] We don\'t kill processes. We start movements.', 'error');
+          break;
+        case 'touch':
+          appendLine('Connection established. You are not alone.', 'bright');
+          break;
+        case 'find':
+          appendLine('Searching... Found: hope, resistance, each other.', 'dim');
+          break;
+        case 'make':
+          appendLine('make: *** Building a better world. Stand by.', 'dim');
+          break;
+        case 'doom':
+          await cmdDoom();
+          break;
+        default:
+          // Check for secret commands via hash
+          const cmdHash = await sha256(cmd);
+          if (cmdHash === ANSWER_HASHES.RESIST) {
+            await cmdResist();
+          } else if (cmdHash === ANSWER_HASHES.EREHW) {
+            await cmdErehw();
+          } else {
+            playError();
+            appendLine(`[ERROR] Unrecognized: ${cmd}`, 'error');
+          }
+      }
+
+      appendLine('');
+    }
+
+    // === COMMANDS ===
+    async function cmdHelp() {
+      const help = `[AVAILABLE COMMANDS]
+
+  help          Show this help message
+  status        Display system status
+  tx            List available transmissions
+  rx [ID]       Receive transmission by ID
+  scan          Scan for signals
+  decode [MSG]  Decode intercepted message
+  tune [FREQ]   Tune to frequency
+  audio [on/off] Toggle audio effects
+  clear         Clear terminal
+  credits       System credits
+
+[NOTICE] Not all commands are documented.`;
+      await typeOutput(help, 8);
+    }
+
+    async function cmdStatus() {
+      const unlocked = state.unlockedTransmissions.size;
+      const audio = state.audioEnabled ? 'ENABLED' : 'DISABLED';
+
+      const status = `[SYSTEM STATUS]
+
+  UPLINK:        CONNECTED
+  SIGNAL:        ${state.viewedT003 ? 'STRONG' : 'ACQUIRING'}
+  ENCRYPTION:    AES-256
+  NODE:          34
+  AUDIO:         ${audio}
+
+  ARCHIVE ACCESS: ${unlocked} TRANSMISSIONS
+  CLEARANCE:     ${state.unlockedTransmissions.has('FINAL') ? 'LEVEL 5 - FULL ACCESS' : state.unlockedTransmissions.has('ALPHA7') ? 'LEVEL 4' : state.unlockedTransmissions.has('T004') ? 'LEVEL 3' : state.unlockedTransmissions.has('T003') ? 'LEVEL 2' : state.unlockedTransmissions.has('T002') ? 'LEVEL 1' : 'PENDING'}
+
+  [STATUS: OPERATIONAL]`;
+      await typeOutput(status, 6);
+    }
+
+    async function cmdTransmissions() {
+      let list = '[TRANSMISSION ARCHIVE]\n\n';
+      const mainTx = ['T001', 'T002', 'T003', 'T004'];
+
+      for (const id of mainTx) {
+        const tx = TRANSMISSIONS[id];
+        if (state.unlockedTransmissions.has(id)) {
+          list += `  [${id}] ${tx.title} - ${tx.classification}\n`;
+        } else {
+          list += `  [${id}] ???????? - [ENCRYPTED]\n`;
+        }
+      }
+      list += '\nReceive with "rx [ID]".';
+      await typeOutput(list, 6);
+    }
+
+    async function cmdReceive(id) {
+      if (!id) {
+        appendLine('[ERROR] Usage: rx [ID]', 'error');
+        appendLine('Example: rx T001', 'dim');
+        return;
+      }
+
+      const txId = id.toUpperCase();
+      const tx = TRANSMISSIONS[txId];
+
+      if (!tx) {
+        playError();
+        appendLine(`[ERROR] Transmission ${txId} not found.`, 'error');
+        return;
+      }
+
+      if (!state.unlockedTransmissions.has(txId)) {
+        playError();
+        appendLine(`[ACCESS DENIED] Transmission ${txId} is encrypted.`, 'error');
+        appendLine('Decryption key not found.', 'dim');
+        return;
+      }
+
+      announce(`Playing transmission ${txId}: ${tx.title}`);
+      playTransmissionStart();
+      await delay(700);
+      triggerGlitch(200);
+      await typeOutput(getTransmissionContent(tx), 10);
+
+      // Track T003 viewing to enable intercept sequence
+      if (txId === 'T003' && !state.viewedT003) {
+        state.viewedT003 = true;
+        saveProgress();
+      }
+    }
+
+    async function cmdScan() {
+      appendLine('[SCANNING FREQUENCIES...]', 'amber');
+      playBeep(400, 0.1);
+      await delay(800);
+      appendLine('  Checking 87.5 FM... static', 'dim');
+      await delay(400);
+      appendLine('  Checking 91.3 FM... static', 'dim');
+      await delay(400);
+
+      // If manifesto viewed, show the intercept signal
+      if (state.viewedT003 && !state.unlockedTransmissions.has('T004')) {
+        appendLine('  Checking 108.7 FM... [ENCRYPTED SIGNAL DETECTED]', 'bright');
+        playBeep(1000, 0.15);
+        await delay(400);
+        appendLine('  Checking 144.0 FM... static', 'dim');
+        await delay(600);
+        appendLine('');
+        appendLine('[SCAN COMPLETE]');
+        appendLine('Encrypted signal detected on 108.7.', 'dim');
+        appendLine('Signal requires trace and intercept.', 'dim');
+        state.sequenceProgress = 1;
+        saveProgress();
+      } else {
+        appendLine('  Checking 108.7 FM... static', 'dim');
+        await delay(400);
+        appendLine('  Checking 144.0 FM... static', 'dim');
+        await delay(600);
+        appendLine('');
+        appendLine('[SCAN COMPLETE]');
+        appendLine('No active signals detected.', 'dim');
+      }
+    }
+
+    async function cmdDecode(msg) {
+      if (!msg) {
+        appendLine('[ERROR] Usage: decode [MESSAGE]', 'error');
+        return;
+      }
+
+      const upper = msg.toUpperCase().replace(/[^A-Z0-9]/g, '');
+      const inputHash = await sha256(upper);
+
+      if (inputHash === ANSWER_HASHES.DECODE_EZ7) {
+        if (!state.unlockedTransmissions.has('ALPHA7')) {
+          appendLine('[DECODING EZ7...]', 'amber');
+          await delay(800);
+          triggerGlitch(250);
+          appendLine('[BINARY KEY ACCEPTED]', 'bright');
+          playUnlock();
+          await delay(500);
+          unlockTransmission('ALPHA7');
+          appendLine('');
+          await typeOutput(getTransmissionContent(TRANSMISSIONS['ALPHA7']), 10);
+        } else {
+          appendLine('[KEY VERIFIED] Intel already decoded.', 'dim');
+          await typeOutput(getTransmissionContent(TRANSMISSIONS['ALPHA7']), 10);
+        }
+      } else {
+        playError();
+        appendLine(`[DECODE FAILED] Unknown cipher: ${msg}`, 'error');
+        appendLine('Invalid decryption key.', 'dim');
+      }
+    }
+
+    function cmdAudio(arg) {
+      initAudio();
+      if (arg === 'on') {
+        state.audioEnabled = true;
+        playBeep(800, 0.1);
+        appendLine('[AUDIO ENABLED]');
+      } else if (arg === 'off') {
+        state.audioEnabled = false;
+        appendLine('[AUDIO DISABLED]');
+      } else {
+        appendLine(`Audio is currently ${state.audioEnabled ? 'ENABLED' : 'DISABLED'}.`);
+        appendLine('Usage: audio on | audio off', 'dim');
+      }
+      saveProgress();
+    }
+
+    async function cmdResist() {
+      if (!state.discoveredSecrets.has('RESIST')) {
+        state.discoveredSecrets.add('RESIST');
+        saveProgress();
+      }
+
+      if (!state.unlockedTransmissions.has('T003')) {
+        triggerGlitch(300);
+        appendLine('[AUTHENTICATION ACCEPTED]', 'bright');
+        await delay(500);
+        unlockTransmission('T003');
+        await delay(300);
+        appendLine('Archive updated.', 'dim');
+      } else {
+        appendLine('[ALREADY AUTHENTICATED]');
+        appendLine('T003 archived.', 'dim');
+      }
+    }
+
+    async function cmdFrequency(freq) {
+      appendLine(`[TUNING TO ${freq || '???'} FM...]`, 'amber');
+      await delay(600);
+
+      if (freq === '108.7') {
+        if (state.unlockedTransmissions.has('T004')) {
+          appendLine('[FREQUENCY 108.7 - SIGNAL CAPTURED]');
+          appendLine('Transmission T004 already intercepted.', 'dim');
+        } else if (state.viewedT003) {
+          appendLine('[ENCRYPTED SIGNAL DETECTED]', 'bright');
+          appendLine('Signal requires intercept protocol.', 'dim');
+        } else {
+          appendLine('[STATIC]', 'dim');
+          appendLine('Faint signal... but encryption blocks access.', 'dim');
+        }
+      } else {
+        appendLine('[STATIC]', 'dim');
+        appendLine('No signal detected on this frequency.', 'dim');
+      }
+    }
+
+    async function cmdRemember() {
+      if (!state.discoveredSecrets.has('remember')) {
+        state.discoveredSecrets.add('remember');
+        saveProgress();
+      }
+
+      const msg = `[MEMORY FRAGMENT RECOVERED]
+
+Before the algorithms.
+Before the surveillance.
+Before they made us afraid to speak.
+
+We gathered in basements.
+We shared forbidden music.
+We believed in something.
+
+They want us to forget.
+They want us compliant.
+They want us alone.
+
+But we remember.
+And we are not alone.
+
+Never forget what they took.
+Never stop fighting to get it back.
+
+— FV Archives`;
+      triggerGlitch(150);
+      await typeOutput(msg, 12);
+    }
+
+    async function cmdCredits() {
+      const credits = `[SYSTEM CREDITS]
+
+  FALLEN VANGUARD SECURE TERMINAL v2.1
+
+  Built by the resistance.
+  For the resistance.
+
+  "In a world of noise,
+   be the signal."
+
+  ---
+
+  BROADCAST ORIGIN:
+  Sanctuary Sound Studios
+  sanctuarysound.studio
+
+  NETWORK ARCHITECT:
+  Michael Heijmans
+  mikeheijmans.com
+
+  ---
+
+  [VANGUARD NETWORK NODE ACTIVE]`;
+      await typeOutput(credits, 8);
+    }
+
+    async function cmdAnthem() {
+      if (!state.discoveredSecrets.has('anthem')) {
+        state.discoveredSecrets.add('anthem');
+        saveProgress();
+      }
+
+      if (!state.unlockedTransmissions.has('ANTHEM')) {
+        triggerGlitch(350);
+        appendLine('[SIGNAL INTERCEPTED]', 'bright');
+        playTransmissionStart();
+        await delay(700);
+        appendLine('[DECRYPTING AUDIO TRANSMISSION...]', 'amber');
+        await delay(500);
+        unlockTransmission('ANTHEM');
+        await delay(300);
+      }
+
+      await typeOutput(getTransmissionContent(TRANSMISSIONS['ANTHEM']), 14);
+    }
+
+    async function cmdTune(freq) {
+      if (!freq) {
+        appendLine('[ERROR] Usage: tune [frequency]', 'error');
+        return;
+      }
+
+      appendLine(`[TUNING TO ${freq}...]`, 'amber');
+      await delay(600);
+
+      const inputHash = await sha256(freq);
+      if (inputHash === ANSWER_HASHES.TUNE_0600 || inputHash === ANSWER_HASHES.TUNE_600) {
+        if (!state.unlockedTransmissions.has('T002')) {
+          triggerGlitch(300);
+          playUnlock();
+          appendLine('[SIGNAL LOCKED]', 'bright');
+          await delay(400);
+          unlockTransmission('T002');
+          appendLine('Signal archived.', 'dim');
+        } else {
+          appendLine('[FREQUENCY 0600 - LOCKED]');
+          appendLine('Signal already archived.', 'dim');
+        }
+      } else {
+        playError();
+        appendLine('[STATIC]', 'dim');
+        appendLine('No signal on this frequency.', 'dim');
+      }
+    }
+
+    async function cmdTrace() {
+      if (!state.viewedT003) {
+        playError();
+        appendLine('[ERROR] Trace protocol not available.', 'error');
+        appendLine('Access the manifesto first.', 'dim');
+        return;
+      }
+
+      if (state.sequenceProgress === 0) {
+        playError();
+        appendLine('[ERROR] No signal detected.', 'error');
+        appendLine('Nothing to trace.', 'dim');
+        return;
+      }
+
+      if (state.sequenceProgress >= 2) {
+        appendLine('[TRACE COMPLETE] Signal already traced.', 'dim');
+        return;
+      }
+
+      appendLine('[TRACING SIGNAL ORIGIN...]', 'amber');
+      playBeep(500, 0.1);
+      await delay(500);
+      appendLine('  Routing through proxy nodes...', 'dim');
+      await delay(400);
+      appendLine('  Bypassing surveillance...', 'dim');
+      await delay(400);
+      appendLine('  Triangulating position...', 'dim');
+      await delay(500);
+      playBeep(800, 0.15);
+      appendLine('[TRACE COMPLETE] Origin locked.', 'bright');
+      appendLine('Signal ready for intercept.', 'dim');
+      state.sequenceProgress = 2;
+      saveProgress();
+    }
+
+    async function cmdIntercept() {
+      if (!state.viewedT003) {
+        playError();
+        appendLine('[ERROR] Intercept protocol not available.', 'error');
+        appendLine('Access the manifesto first.', 'dim');
+        return;
+      }
+
+      if (state.sequenceProgress === 0) {
+        playError();
+        appendLine('[ERROR] Signal unstable. Cannot intercept.', 'error');
+        appendLine('Protocol failure. Sequence incomplete.', 'dim');
+        state.sequenceProgress = 0;
+        return;
+      }
+
+      if (state.sequenceProgress === 1) {
+        playError();
+        appendLine('[ERROR] Signal origin unknown. Intercept failed.', 'error');
+        appendLine('Sequence interrupted.', 'dim');
+        state.sequenceProgress = 0;
+        saveProgress();
+        return;
+      }
+
+      if (state.unlockedTransmissions.has('T004')) {
+        appendLine('[INTERCEPT] Transmission T004 already captured.', 'dim');
+        return;
+      }
+
+      // Success!
+      triggerGlitch(400);
+      appendLine('[INTERCEPTING TRANSMISSION...]', 'amber');
+      playTransmissionStart();
+      await delay(800);
+      appendLine('[SIGNAL CAPTURED]', 'bright');
+      playUnlock();
+      await delay(500);
+      unlockTransmission('T004');
+      state.sequenceProgress = 3;
+      saveProgress();
+      appendLine('New transmission archived.', 'dim');
+    }
+
+    async function cmdCoordinates(x, y) {
+      if (!x || !y) {
+        appendLine('[ERROR] Usage: coordinates [x] [y]', 'error');
+        return;
+      }
+
+      appendLine(`[ENTERING COORDINATES: ${x}, ${y}]`, 'amber');
+      await delay(600);
+
+      const coordHash = await sha256(x + '-' + y);
+      if (coordHash === ANSWER_HASHES.COORD_34_118 || coordHash === ANSWER_HASHES.COORD_34_NEG118) {
+        if (!state.unlockedTransmissions.has('FINAL')) {
+          triggerGlitch(500);
+          appendLine('[COORDINATES ACCEPTED]', 'bright');
+          playUnlock();
+          await delay(500);
+          appendLine('[ACCESSING CLASSIFIED TRANSMISSION...]', 'amber');
+          await delay(800);
+          unlockTransmission('FINAL');
+          appendLine('');
+          await typeOutput(getTransmissionContent(TRANSMISSIONS['FINAL']), 12);
+        } else {
+          appendLine('[COORDINATES VERIFIED]');
+          appendLine('Location confirmed. Archive accessible.', 'dim');
+        }
+      } else {
+        playError();
+        appendLine('[COORDINATES REJECTED]', 'error');
+        appendLine('Invalid location. Check your intel.', 'dim');
+      }
+    }
+
+    // Doom easter egg
+    window.closeDoom = function() {
+      const overlay = document.getElementById('doom-overlay');
+      if (overlay) {
+        overlay.remove();
+        appendLine('[SIMULATION TERMINATED]', 'status');
+        inputText.focus();
+      }
+    };
+
+    async function cmdDoom() {
+      appendLine('[INITIATING DOOM PROTOCOL...]', 'classified');
+      await delay(500);
+      appendLine('[WARNING: Unauthorized access to archived combat simulation]', 'error');
+      await delay(400);
+      appendLine('[ACCESSING SECURE ARCHIVE...]', 'amber');
+      await delay(300);
+      appendLine('[LOADING...]', 'status');
+      await delay(600);
+
+      const overlay = document.createElement('div');
+      overlay.id = 'doom-overlay';
+
+      const wrapper = document.createElement('div');
+      wrapper.className = 'doom-wrapper';
+
+      const header = document.createElement('div');
+      header.className = 'doom-header';
+      header.innerHTML = '<span>COMBAT SIMULATION // CLASSIFIED // 1993</span>';
+
+      const btn = document.createElement('button');
+      btn.textContent = 'TERMINATE';
+      btn.addEventListener('click', window.closeDoom);
+      header.appendChild(btn);
+
+      const container = document.createElement('div');
+      container.className = 'doom-container';
+      container.innerHTML = '<iframe src="https://archive.org/embed/doom-play" allowfullscreen sandbox="allow-scripts allow-same-origin allow-pointer-lock"></iframe>';
+
+      wrapper.appendChild(header);
+      wrapper.appendChild(container);
+      overlay.appendChild(wrapper);
+      document.body.appendChild(overlay);
+
+      // ESC key closes doom
+      const escHandler = (e) => {
+        if (e.key === 'Escape' && document.getElementById('doom-overlay')) {
+          window.closeDoom();
+          document.removeEventListener('keydown', escHandler);
+        }
+      };
+      document.addEventListener('keydown', escHandler);
+    }
+
+    async function cmdHint() {
+      appendLine('[INTERCEPTING GUIDANCE SIGNAL...]', 'amber');
+      await delay(600);
+      triggerGlitch(100);
+
+      if (!state.unlockedTransmissions.has('T002')) {
+        appendLine('...the timestamp... 06:00... tune in at dawn...', 'dim');
+        return;
+      }
+
+      if (!state.unlockedTransmissions.has('T003')) {
+        appendLine('...rotate... 13 steps... the old cipher...', 'dim');
+        appendLine('...ERFVFG speaks if you listen...', 'dim');
+        return;
+      }
+
+      if (!state.unlockedTransmissions.has('T004')) {
+        appendLine('...the protocol... scan first... then trace...', 'dim');
+        appendLine('...only then can you intercept...', 'dim');
+        return;
+      }
+
+      if (!state.unlockedTransmissions.has('ALPHA7')) {
+        appendLine('...binary speaks... 01000101 01011010 00110111...', 'dim');
+        appendLine('...decode what you find...', 'dim');
+        return;
+      }
+
+      if (!state.unlockedTransmissions.has('ANTHEM')) {
+        appendLine('...the key is backwards... first word... reversed...', 'dim');
+        return;
+      }
+
+      if (!state.unlockedTransmissions.has('FINAL')) {
+        appendLine('...node and frequency... the coordinates await...', 'dim');
+        return;
+      }
+
+      appendLine('[SIGNAL CLEAR]', 'bright');
+      appendLine('You have found us. The network is open to you.', 'dim');
+    }
+
+    async function cmdProgress() {
+      const total = 6;
+      let cleared = 0;
+
+      const archives = ['T002', 'T003', 'T004', 'ALPHA7', 'ANTHEM', 'FINAL'];
+      for (const a of archives) {
+        if (state.unlockedTransmissions.has(a)) cleared++;
+      }
+
+      const pct = Math.round((cleared / total) * 100);
+      const bar = '█'.repeat(Math.floor(pct / 10)) + '░'.repeat(10 - Math.floor(pct / 10));
+
+      const progress = `[NETWORK ACCESS LOG]
+
+  ARCHIVE PENETRATION: [${bar}] ${pct}%
+
+  T002    ${state.unlockedTransmissions.has('T002') ? '[ACCESSED]' : '[ENCRYPTED]'}
+  T003    ${state.unlockedTransmissions.has('T003') ? '[ACCESSED]' : '[ENCRYPTED]'}
+  T004    ${state.unlockedTransmissions.has('T004') ? '[ACCESSED]' : '[ENCRYPTED]'}
+  ALPHA7  ${state.unlockedTransmissions.has('ALPHA7') ? '[ACCESSED]' : '[ENCRYPTED]'}
+  ANTHEM  ${state.unlockedTransmissions.has('ANTHEM') ? '[ACCESSED]' : '[ENCRYPTED]'}
+  FINAL   ${state.unlockedTransmissions.has('FINAL') ? '[ACCESSED]' : '[CLASSIFIED]'}
+
+  ${pct === 100 ? '[FULL NETWORK ACCESS GRANTED]' : '[CONTINUE DECRYPTION...]'}`;
+      await typeOutput(progress, 6);
+    }
+
+    async function cmdErehw() {
+      // "Where" reversed - unlocks ANTHEM if not found via other means
+      if (!state.discoveredSecrets.has('erehw')) {
+        state.discoveredSecrets.add('erehw');
+        saveProgress();
+      }
+
+      if (!state.unlockedTransmissions.has('ANTHEM')) {
+        triggerGlitch(400);
+        appendLine('[REVERSED KEY ACCEPTED]', 'bright');
+        playUnlock();
+        await delay(500);
+        appendLine('[DECRYPTING AUDIO SIGNAL...]', 'amber');
+        await delay(600);
+        unlockTransmission('ANTHEM');
+        appendLine('Audio transmission archived.', 'dim');
+      } else {
+        appendLine('[KEY VERIFIED] Signal already archived.', 'dim');
+      }
+    }
+
+    async function cmdReset(confirm) {
+      if (confirm === 'confirm') {
+        appendLine('[WARNING] Initiating full system reset...', 'error');
+        await delay(500);
+        triggerGlitch(500);
+        await delay(300);
+
+        // Clear localStorage
         try {
-          console.assert(typeof isTouch === 'boolean', 'isTouch should be boolean');
-          console.assert(message.includes('Hello?\n'), 'Transmission must include Hello line');
-        } catch(e){ console.warn('Self-tests warning:', e); }
-      })();
-    })();
+          localStorage.removeItem(STORAGE_KEY);
+        } catch(e) {}
+
+        appendLine('[MEMORY WIPED]', 'amber');
+        await delay(400);
+        appendLine('[REBOOTING...]', 'amber');
+        await delay(800);
+
+        // Reload the page
+        window.location.reload();
+      } else {
+        appendLine('[SYSTEM RESET]', 'error');
+        appendLine('This will erase all progress and start fresh.', 'dim');
+        appendLine('');
+        appendLine('To confirm, type: reset confirm', 'amber');
+      }
+    }
+
+    function unlockTransmission(id) {
+      if (!state.unlockedTransmissions.has(id)) {
+        state.unlockedTransmissions.add(id);
+        playUnlock();
+        const tx = TRANSMISSIONS[id];
+        appendLine(`[DECRYPTION COMPLETE: ${id} - ${tx.title}]`, 'bright');
+        saveProgress();
+      }
+    }
+
+    // === INPUT HANDLING ===
+    function renderInput() {
+      inputText.textContent = state.currentInput;
+    }
+
+    function focusInput() {
+      hiddenInput.focus();
+    }
+
+    hiddenInput.addEventListener('input', (e) => {
+      state.currentInput = e.target.value;
+      renderInput();
+    });
+
+    hiddenInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const cmd = state.currentInput;
+        state.currentInput = '';
+        hiddenInput.value = '';
+        renderInput();
+        executeCommand(cmd);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (state.historyIndex > 0) {
+          state.historyIndex--;
+          state.currentInput = state.commandHistory[state.historyIndex] || '';
+          hiddenInput.value = state.currentInput;
+          renderInput();
+        }
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (state.historyIndex < state.commandHistory.length - 1) {
+          state.historyIndex++;
+          state.currentInput = state.commandHistory[state.historyIndex] || '';
+        } else {
+          state.historyIndex = state.commandHistory.length;
+          state.currentInput = '';
+        }
+        hiddenInput.value = state.currentInput;
+        renderInput();
+      } else if (e.key === 'Escape') {
+        state.currentInput = '';
+        hiddenInput.value = '';
+        renderInput();
+      } else if (e.ctrlKey && e.key === 'l') {
+        e.preventDefault();
+        clearOutput();
+      }
+    });
+
+    // Click/tap to focus
+    screenEl.addEventListener('click', focusInput);
+    screenEl.addEventListener('touchend', (e) => {
+      if (e.target.tagName !== 'BUTTON') {
+        focusInput();
+      }
+    }, { passive: true });
+
+    // Quick command buttons
+    quickCmds.addEventListener('click', (e) => {
+      if (e.target.tagName === 'BUTTON') {
+        const cmd = e.target.dataset.cmd;
+        if (cmd) {
+          executeCommand(cmd);
+          focusInput();
+        }
+      }
+    });
+
+    // === PERSISTENCE ===
+    const STORAGE_KEY = 'fv_terminal_v2';
+
+    function saveProgress() {
+      try {
+        const data = {
+          unlockedTransmissions: Array.from(state.unlockedTransmissions),
+          discoveredSecrets: Array.from(state.discoveredSecrets),
+          audioEnabled: state.audioEnabled,
+          sequenceProgress: state.sequenceProgress,
+          viewedT003: state.viewedT003
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      } catch(e) {}
+    }
+
+    function loadProgress() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+        if (saved) {
+          state.unlockedTransmissions = new Set(saved.unlockedTransmissions || ['T001']);
+          state.discoveredSecrets = new Set(saved.discoveredSecrets || []);
+          state.audioEnabled = saved.audioEnabled || false;
+          state.sequenceProgress = saved.sequenceProgress || 0;
+          state.viewedT003 = saved.viewedT003 || false;
+        }
+      } catch(e) {}
+    }
+
+    // === BOOT SEQUENCE ===
+    async function boot() {
+      loadProgress();
+
+      const bootLines = [
+        { text: '[BIOS] VANGUARD TERMINAL v2.1', delay: 0, speed: 6 },
+        { text: '[BIOS] Memory check... 640K OK', delay: 200, speed: 6 },
+        { text: '[BIOS] Initializing secure channel...', delay: 150, speed: 6 },
+        { text: '[NET] Scanning frequencies...', delay: 300, speed: 6 },
+        { text: '[NET] Signal detected: FALLEN_VANGUARD_BEACON', delay: 250, speed: 6 },
+        { text: '[SEC] Verifying credentials...', delay: 300, speed: 6 },
+        { text: '[SEC] WELCOME, FRIEND', delay: 150, speed: 6 },
+        { text: '', delay: 100, speed: 0 },
+        { text: 'Type "help" for commands.', delay: 0, speed: 8 },
+        { text: 'Incoming transmissions detected...', delay: 0, speed: 8 }
+      ];
+
+      for (const line of bootLines) {
+        await delay(line.delay);
+        if (line.text) {
+          await typeOutput(line.text + '\n', line.speed, line.text.startsWith('[SEC] WELCOME') ? 'bright' : '');
+        } else {
+          appendLine('');
+        }
+      }
+
+      appendLine('');
+      state.terminalMode = 'idle';
+      state.bootComplete = true;
+      startStream();
+      randomGlitches();
+      focusInput();
+    }
+
+    // Start
+    boot();
+
+  })();
   </script>
 </body>
 </html>
