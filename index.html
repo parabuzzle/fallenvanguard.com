@@ -455,7 +455,7 @@
       unlockedTransmissions: new Set(['T001']),
       discoveredSecrets: new Set(),
       terminalMode: 'boot', // boot, idle, typing
-      audioEnabled: false,
+      audioEnabled: true,
       audioInitialized: false,
       bootComplete: false,
       sequenceProgress: 0,  // 0=none, 1=scanned, 2=traced, 3=intercepted
@@ -1701,7 +1701,7 @@ Never stop fighting to get it back.
         if (saved) {
           state.unlockedTransmissions = new Set(saved.unlockedTransmissions || ['T001']);
           state.discoveredSecrets = new Set(saved.discoveredSecrets || []);
-          state.audioEnabled = saved.audioEnabled || false;
+          state.audioEnabled = saved.audioEnabled ?? true;
           state.sequenceProgress = saved.sequenceProgress || 0;
           state.viewedT003 = saved.viewedT003 || false;
         }
